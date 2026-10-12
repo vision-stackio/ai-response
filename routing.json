@@ -1,0 +1,29 @@
+{
+  "routes": {
+    "text": [
+      { "provider": "llm", "model": "${LLM_MODEL:-openrouter/free}" },
+      { "provider": "gemini", "model": "gemini-3.5-flash-lite" },
+      { "provider": "gemini", "model": "gemini-3.1-flash-lite" },
+      { "provider": "openai", "model": "gpt-5.4-nano" },
+      { "provider": "anthropic", "model": "claude-haiku-5-5" }
+    ],
+    "docs": [
+      { "provider": "xai", "model": "grok-4-fast-non-reasoning" },
+      { "provider": "gemini", "model": "gemini-3.5-flash" },
+      { "provider": "openai", "model": "gpt-5.4-mini" },
+      { "provider": "anthropic", "model": "claude-sonnet-5-5" }
+    ],
+    "image": [
+      { "provider": "llm", "model": "${LLM_MODEL:-openrouter/free}" },
+      { "provider": "gemini", "model": "gemini-3.5-flash" },
+      { "provider": "gemini", "model": "gemini-3.5-flash-lite" },
+      { "provider": "openai", "model": "gpt-5.4-mini" },
+      { "provider": "anthropic", "model": "claude-sonnet-5-5" }
+    ],
+    "video": [
+      { "provider": "gemini", "model": "gemini-3.5-flash" },
+      { "provider": "gemini", "model": "gemini-3.5-flash-lite" }
+    ]
+  },
+  "providers": {}
+}

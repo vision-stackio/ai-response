@@ -1,0 +1,8 @@
+node_modules/
+.env
+query_history.json
+
+# Keep the folder, ignore whatever you drop into it
+tests/*
+!tests/.gitkeep
+.router-state.json

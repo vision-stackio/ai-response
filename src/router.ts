@@ -45,7 +45,7 @@ export async function respond(input: Input, { routing, providers, cooldowns }: R
 
       const waitMs = cooldowns.remainingMs(candidate);
       if (respectCooldowns && waitMs > 0) {
-        console.log(`Skipping ${label(candidate)} (cooling down, ~${formatDuration(waitMs)} left)`);
+        console.log(`⏸️  Skipping ${label(candidate)} (cooling down, ~${formatDuration(waitMs)} left)`);
         continue;
       }
 

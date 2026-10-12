@@ -2,27 +2,30 @@
   "routes": {
     "text": [
       { "provider": "llm", "model": "${LLM_MODEL:-openrouter/free}" },
-      { "provider": "gemini", "model": "gemini-3.5-flash-lite" },
-      { "provider": "gemini", "model": "gemini-3.1-flash-lite" },
-      { "provider": "openai", "model": "gpt-5.4-nano" },
-      { "provider": "anthropic", "model": "claude-haiku-5-5" }
+      { "provider": "gemini", "model": "gemini-2.0-flash-lite" },
+      { "provider": "gemini", "model": "gemini-2.0-flash" },
+      { "provider": "gemini", "model": "gemini-1.5-flash" },
+      { "provider": "openai", "model": "gpt-4o-mini" },
+      { "provider": "anthropic", "model": "claude-3-5-haiku-latest" }
     ],
     "docs": [
-      { "provider": "xai", "model": "grok-4-fast-non-reasoning" },
-      { "provider": "gemini", "model": "gemini-3.5-flash" },
-      { "provider": "openai", "model": "gpt-5.4-mini" },
-      { "provider": "anthropic", "model": "claude-sonnet-5-5" }
+      { "provider": "gemini", "model": "gemini-2.0-flash" },
+      { "provider": "gemini", "model": "gemini-1.5-flash" },
+      { "provider": "xai", "model": "grok-2-latest" },
+      { "provider": "openai", "model": "gpt-4o-mini" },
+      { "provider": "anthropic", "model": "claude-3-5-sonnet-latest" }
     ],
     "image": [
       { "provider": "llm", "model": "${LLM_MODEL:-openrouter/free}" },
-      { "provider": "gemini", "model": "gemini-3.5-flash" },
-      { "provider": "gemini", "model": "gemini-3.5-flash-lite" },
-      { "provider": "openai", "model": "gpt-5.4-mini" },
-      { "provider": "anthropic", "model": "claude-sonnet-5-5" }
+      { "provider": "gemini", "model": "gemini-2.0-flash" },
+      { "provider": "gemini", "model": "gemini-2.0-flash-lite" },
+      { "provider": "gemini", "model": "gemini-1.5-flash" },
+      { "provider": "openai", "model": "gpt-4o-mini" },
+      { "provider": "anthropic", "model": "claude-3-5-sonnet-latest" }
     ],
     "video": [
-      { "provider": "gemini", "model": "gemini-3.5-flash" },
-      { "provider": "gemini", "model": "gemini-3.5-flash-lite" }
+      { "provider": "gemini", "model": "gemini-2.0-flash" },
+      { "provider": "gemini", "model": "gemini-1.5-flash" }
     ]
   },
   "providers": {}

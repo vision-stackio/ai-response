@@ -22,9 +22,10 @@
 3. [How routing works](#-how-routing-works)
 4. [Customising `routing.json`](#-customising-routingjson)
 5. [Adding any other provider](#-adding-any-other-provider)
-6. [Free-tier notes](#-free-tier-notes)
+6. [Image Identification](#-image-identification-person-identify-panel)
+7. [Free-tier notes](#-free-tier-notes)
 
-
+---
 
 ## Setup
 
@@ -35,37 +36,48 @@ cp .env.example .env   # add your keys (see below)
 npm run status         # see which models are ready
 ```
 
-**Free setup** — two free keys are enough:
+**Free setup** — two free keys are enough for text, image, docs and video:
 
 | Key              | Where                          | Used for                                                      |
 | ---------------- | ------------------------------ | ------------------------------------------------------------- |
-| `GEMINI_API_KEY` | <https://aistudio.google.com/> | Gemini free-tier models (text, image, docs, video)            |
+| `GEMINI_API_KEY` | <https://aistudio.google.com/> | Gemini free-tier models (text, image, docs, video) — primary  |
 | `LLM_API_KEY`    | <https://openrouter.ai/keys>   | OpenRouter `openrouter/free` — tried first for text and image |
 
 ```env
+# ---- Free setup (enough on its own) ----
+
+# Gemini free tier - key from https://aistudio.google.com/
+GEMINI_API_KEY=
+
+# OpenRouter free models - key from https://openrouter.ai/keys
+# Used first for text and image; falls back to Gemini automatically.
 LLM_PROVIDER=openai
 LLM_API_KEY=sk-or-v1-...
 LLM_API_URL=https://openrouter.ai/api/v1/chat/completions
 LLM_MODEL=openrouter/free
+
+# ---- Optional extra providers (skipped when blank) ----
+OPENAI_API_KEY=
+XAI_API_KEY=
+ANTHROPIC_API_KEY=
 ```
 
 `LLM_*` works for any OpenAI-compatible endpoint, not just OpenRouter — change `LLM_API_URL` and `LLM_MODEL`. Providers without a key are skipped automatically, so you only need the ones you want.
 
-
+---
 
 ## Usage
 
 ```bash
-npm start                    # process every file in target-files/
-npm start -- photo.png       # one file (image, video, pdf, txt/md/csv/json...)
-npm start -- "explain DNS simply"   # a text question
-npm run status               # active models, routes, cooldowns
+npm start                              # process every file in tests/
+npm start -- photo.png                 # one file (image, video, pdf, txt/md/csv/json...)
+npm start -- "explain DNS simply"      # a text question
+npm run status                         # active models, routes, cooldowns
 ```
 
-
+---
 
 ## How routing works
-
 
 | Input                                   | Type    | Why                                 |
 | --------------------------------------- | ------- | ----------------------------------- |
@@ -73,6 +85,17 @@ npm run status               # active models, routes, cooldowns
 | Longer text, or a PDF                   | `docs`  | needs a bigger context window       |
 | `.png` `.jpg` `.jpeg` `.webp`           | `image` | needs a vision model                |
 | `.mp4` `.mov` `.webm`                   | `video` | only some providers accept video    |
+
+Default routes (Gemini free models are heavily used):
+
+```
+┌─ text  → OpenRouter free → Gemini free → (openai → claude)
+query ─► classify ─┼─ docs  → grok → Gemini free → (openai → claude)
+                   ├─ image → OpenRouter free → Gemini free → (openai → claude)
+                   └─ video → Gemini free
+                              │
+                    model failed? ───────┴─► next model in the list ─► result ─► history
+```
 
 For each type, `routing.json` holds an ordered list of models. The router:
 
@@ -87,6 +110,7 @@ For each type, `routing.json` holds an ordered list of models. The router:
 
 Every answer is logged to `query_history.json` with the model that produced it and any models it fell back from. Past queries are printed grouped by type.
 
+---
 
 ## Customising `routing.json`
 
@@ -94,7 +118,10 @@ Edit the order or swap model names — no code changes needed:
 
 ```json
 "image": [
+  { "provider": "llm", "model": "${LLM_MODEL:-openrouter/free}" },
   { "provider": "gemini", "model": "gemini-2.0-flash" },
+  { "provider": "gemini", "model": "gemini-2.0-flash-lite" },
+  { "provider": "openai", "model": "gpt-4o-mini" },
   { "provider": "anthropic", "model": "claude-sonnet-4" }
 ]
 ```
@@ -103,11 +130,11 @@ Built-in providers: `gemini`, `llm` (the `LLM_*` endpoint, OpenRouter by default
 
 A model name can read from the environment: `"${LLM_MODEL:-openrouter/free}"`.
 
-
+---
 
 ## Adding any other provider
 
-Anything that speaks the OpenAI chat completions protocol (Groq, OpenRouter, Mistral, DeepSeek, Ollama, LM Studio, ...) can be added in `routing.json` with no code:
+Anything that speaks the OpenAI chat-completions protocol (Groq, OpenRouter, Mistral, DeepSeek, Ollama, LM Studio, ...) can be added in `routing.json` with no code:
 
 ```json
 "providers": {
@@ -120,12 +147,29 @@ Then use it in a route: `{ "provider": "groq", "model": "<model-name>" }`.
 
 `accepts` lists attachment types the provider handles (`image`, `video`, `pdf`); text is always accepted.
 
-To add a non OpenAI style provider, implement the `Provider` interface and register it in `registry.ts`.
+To add a non-OpenAI-style provider, implement the `Provider` interface and register it in `registry.ts`.
 
+---
 
+## Image Identification (person identify panel)
+
+Optional — used when you want reverse-image / person identification features.
+
+| Key             | Where                     | Used for                                          |
+| --------------- | ------------------------- | ------------------------------------------------- |
+| `SERPAPI_KEY`   | <https://serpapi.com>     | Google Lens style search (100 free searches/month)|
+| `IMGBB_API_KEY` | <https://api.imgbb.com>   | Hosts uploaded images so Google Lens can see them |
+
+```env
+# ---- Image Identification (optional) ----
+SERPAPI_KEY=your-serpapi-key-here
+IMGBB_API_KEY=your-imgbb-key-here
+```
+
+---
 
 ## Free-tier notes
 
-OpenRouter's free models and Gemini's free tier are both rate limited. When one runs out, the router moves to the next and remembers it for later runs  that is the intended flow here.
+OpenRouter's free models and Gemini's free tier are both rate-limited. When one runs out, the router moves to the next and remembers it for later runs — that is the intended flow here.
 
 Providers without a key are skipped automatically. You only need the keys for the providers you actually want to use.

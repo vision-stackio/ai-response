@@ -12,7 +12,7 @@ import { KINDS, type Input } from './types.js';
 const DIVIDER = '='.repeat(40);
 
 const USAGE = `Usage:
-  npm start                         process every file in target-files/
+  npm start                         process every file in tests/
   npm start -- <file>               process one file (image, video, pdf, text)
   npm start -- "your question"      ask a text question
   npm start -- --status             show active models, routes and cooldowns`;
@@ -37,7 +37,7 @@ function toInput(arg: string): Input {
   return fromText(arg);
 }
 
-/** Decides what to process: CLI args if given, otherwise everything in target-files/. */
+/** Decides what to process: CLI args if given, otherwise everything in tests/. */
 function collectArgs(args: string[]): string[] | null {
   if (args.length > 0) {
     // `npm start -- what is rust` without quotes: treat the loose words as one question.
@@ -86,7 +86,7 @@ function printStatus(config: RoutingConfig, providers: ReturnType<typeof buildPr
         const envVar = apiKeyEnvFor(candidate.provider, config);
         state = envVar ? `🔑 no key (set ${envVar})` : '❓ unknown provider';
       } else if (cooldowns.remainingMs(candidate) > 0) {
-        state = `cooling down, ~${formatDuration(cooldowns.remainingMs(candidate))} left`;
+        state = `⏸️  cooling down, ~${formatDuration(cooldowns.remainingMs(candidate))} left`;
       }
       console.log(`  ${index + 1}. ${name.padEnd(46)} ${state}`);
     });
